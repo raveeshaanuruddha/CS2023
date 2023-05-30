@@ -1,0 +1,62 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+
+using namespace std;
+
+int findMinDist(const vector<int>& dist, const vector<bool>& visited) {
+    int minDist = numeric_limits<int>::max();
+    int minVertex = -1;
+
+    for (int v = 0; v < dist.size(); ++v) {
+        if (!visited[v] && dist[v] < minDist) {
+            minDist = dist[v];
+            minVertex = v;
+        }
+    }
+
+    return minVertex;
+}
+
+vector<int> dijkstra(const vector<vector<int>>& graph, int src) {
+    int numCities = graph.size();
+    vector<int> dist(numCities, numeric_limits<int>::max());
+    dist[src] = 0;
+    vector<bool> visited(numCities, false);
+
+    for (int i = 0; i < numCities; ++i) {
+        int minVtx = findMinDist(dist, visited);
+        visited[minVtx] = true;
+
+        for (int v = 0; v < numCities; ++v) {
+            if (!visited[v] && graph[minVtx][v] != 0 && dist[minVtx] != numeric_limits<int>::max()
+                && dist[minVtx] + graph[minVtx][v] < dist[v]) {
+                dist[v] = dist[minVtx] + graph[minVtx][v];
+            }
+        }
+    }
+
+    return dist;
+}
+
+int main() {
+    vector<vector<int>> graph = {
+        {0, 10, 0, 0, 15, 5},
+        {10, 0, 10, 30, 0, 0},
+        {0, 10, 0, 12, 5, 0},
+        {0, 30, 12, 0, 0, 20},
+        {15, 0, 5, 0, 0, 0},
+        {5, 0, 0, 20, 0, 0}
+    };
+
+    int src = 5;
+
+    vector<int> dist = dijkstra(graph, src);
+
+    for (int city = 0; city < dist.size(); ++city) {
+        cout << "Shortest distance from city " << src << " to city " << city << ": " << dist[city] << endl;
+    }
+
+    return 0;
+}
+
